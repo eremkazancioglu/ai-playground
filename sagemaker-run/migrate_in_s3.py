@@ -53,7 +53,7 @@ class S3ImageTransfer:
         source_key = f"photos/{photo_id}/medium.{extension}"
         
         if destination_key is None:
-            destination_key = f"inaturalist-images-acer-like/{photo_id}_medium.{extension}"
+            destination_key = f"inaturalist-images/{photo_id}_medium.{extension}"
         
         try:
             # Copy the object from source to destination
@@ -79,7 +79,7 @@ class S3ImageTransfer:
             return False
     
     def transfer_images_sequential(self, df: pd.DataFrame, 
-                                 destination_prefix: str = "inaturalist-images-acer-like") -> dict:
+                                 destination_prefix: str = "inaturalist-images") -> dict:
         """
         Transfer images sequentially (slower but more reliable)
         
@@ -110,24 +110,17 @@ class S3ImageTransfer:
         
         return results
 
-def main():
+def copy_inaturalist_images(csv_file, destination_bucket):
 
     # Load your dataframe
-    df = pd.read_csv("../acer_like_maryland_photo_ids.csv")
+    df = pd.read_csv(csv_file)
     
-    # Configure your S3 transfer
-    destination_bucket = 'erem-sagemaker-training-data'  # Replace with your bucket name
-    
-    # Initialize the transfer class
-    # Option 1: Using default AWS credentials
+    # Initialize the transfer class using default AWS credentials
     transfer = S3ImageTransfer(destination_bucket)
     
     # Transfer images
     logger.info(f"Starting transfer of {len(df)} images...")
     
-    # Choose your transfer method:
-    
-    # Sequential transfer (recommended for large datasets to avoid rate limiting)
     results = transfer.transfer_images_sequential(df)
     
     # Print results
@@ -144,4 +137,11 @@ def main():
         logger.info("Failed transfers saved to 'failed_transfers.csv'")
 
 if __name__ == "__main__":
-    main()
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Copy images from iNaturalist to personal bucket')
+    parser.add_argument('--csv-file', type=str, help='CVS file with the dataframe of files to be copied over')
+    parser.add_argument('--destination-bucket', type=str, help='Destination bucket')
+    args = parser.parse_args()
+
+    copy_inaturalist_images(args.csv_file, args.destination_bucket)
