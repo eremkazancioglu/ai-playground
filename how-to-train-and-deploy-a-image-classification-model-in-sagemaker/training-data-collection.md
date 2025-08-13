@@ -95,6 +95,6 @@ The resulting CSV file has the following columns:
 
 ## How do we get the images that we determined that we need?
 
-Model training will take place on AWS Sagemaker and iNaturalist images are also on AWS, so I worked with Anthropic's Claude to develop a quick script that takes the CSV file generated above and copy images that are needed from iNaturalist S3 bucket to my personal S3 bucket.
+Model training will take place on AWS Sagemaker and iNaturalist images are also on AWS, so I collaborated with Anthropic's Claude to develop a script that takes the CSV file generated above and copy images that are needed from iNaturalist S3 bucket to my personal S3 bucket.
 
 This script is stored as [migrate\_in\_s3.py](../sagemaker-run/migrate_in_s3.py)
